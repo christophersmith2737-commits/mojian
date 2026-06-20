@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, BookHeart, Sparkles, CalendarDays, Users, Palette, Lock, PenLine } from 'lucide-react';
+import { X, Sparkles, CalendarDays, Users, Palette, Lock, PenLine } from 'lucide-react';
 
 interface AboutModalProps {
   isOpen: boolean;
@@ -34,9 +34,7 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-gradient-to-br from-accent-lavender/20 to-accent-rose/20">
-                  <BookHeart size={18} style={{ color: 'var(--accent-lavender)' }} />
-                </div>
+                <img src="/tubiao.png" alt="墨笺" className="w-8 h-8 rounded-lg object-cover" />
                 <h3 className="text-lg font-serif font-semibold" style={{ color: 'var(--text-primary)' }}>关于 墨笺</h3>
               </div>
               <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={onClose}

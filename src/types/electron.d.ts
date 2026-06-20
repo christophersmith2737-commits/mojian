@@ -1,33 +1,12 @@
-export interface Personality {
-  id: string;
-  name: string;
-  prompt: string;
-  enabled: boolean;
-}
-
-export interface AIReview {
-  personalityId: string;
-  personalityName: string;
-  content: string;
-  createdAt: string;
-}
-
-export interface DiaryEntry {
-  date: string;
-  content: string;
-  aiReviews: AIReview[];
-  reviewRequested: boolean;
-  reviewRequestedAt: string | null;
-  updatedAt: string;
-}
+import type { DiaryEntry, Personality } from './index';
 
 export interface ElectronAPI {
   readJournal: (year: number, month: number, day: number) => Promise<DiaryEntry | null>;
   writeJournal: (entry: DiaryEntry) => Promise<{ success: boolean; error?: string }>;
   listMonth: (year: number, month: number) => Promise<DiaryEntry[]>;
-  readConfig: () => Promise<{ deepseekApiKey: string; personalities?: Personality[]; theme?: string }>;
-  writeConfig: (config: { deepseekApiKey?: string; personalities?: Personality[]; theme?: string }) => Promise<{ success: boolean; error?: string }>;
-  requestAIReview: (apiKey: string, personalityPrompt: string, content: string) => Promise<{ success: boolean; reply?: string; error?: string }>;
+  readConfig: () => Promise<{ deepseekApiKey: string; personalities?: Personality[]; sharedPrompt?: string; theme?: string }>;
+  writeConfig: (config: { deepseekApiKey?: string; personalities?: Personality[]; sharedPrompt?: string; theme?: string }) => Promise<{ success: boolean; error?: string }>;
+  requestAIReview: (apiKey: string, personalityPrompt: string, content: string, history?: string) => Promise<{ success: boolean; reply?: string; error?: string }>;
 }
 
 declare global {

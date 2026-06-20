@@ -8,6 +8,7 @@ const isDev = process.env.NODE_ENV === 'development';
 let mainWindow = null;
 
 function createWindow() {
+  const iconPath = path.join(__dirname, '..', 'public', 'tubiao.png');
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -16,6 +17,7 @@ function createWindow() {
     frame: true,
     titleBarStyle: 'default',
     backgroundColor: '#0a0a1a',
+    icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -180,14 +182,18 @@ ipcMain.handle('config:write', (event, newConfig) => {
 
 // ---- Deepseek API Call ----
 
-ipcMain.handle('deepseek:chat', (event, { apiKey, prompt, content }) => {
+ipcMain.handle('deepseek:chat', (event, { apiKey, prompt, content, history }) => {
   return new Promise((resolve, reject) => {
     const systemPrompt = prompt || '你是一位温暖、富有洞察力的朋友，善于倾听和回应。请用中文回复。';
+    let userMessage = `请根据你的人设，以你的风格回复这篇日记：\n\n${content}`;
+    if (history) {
+      userMessage = `以下是这位用户过去的日记记录，请了解他的经历和心情变化：\n\n${history}\n\n---\n\n以上是历史日记。现在，请根据你的人设，以你的风格回复他今天写的这篇日记：\n\n${content}`;
+    }
     const data = JSON.stringify({
       model: 'deepseek-chat',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: `请根据你的人设，以你的风格回复这篇日记：\n\n${content}` }
+        { role: 'user', content: userMessage }
       ],
       temperature: 0.8,
       max_tokens: 800,

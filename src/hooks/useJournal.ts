@@ -121,6 +121,35 @@ export function useJournal() {
     return ok;
   }, []);
 
+  // Fetch recent diary entries from past dates (for AI context)
+  const fetchDiaryHistory = useCallback(async (beforeDate: string, maxEntries = 10): Promise<string> => {
+    const parts = beforeDate.split('-');
+    let year = parseInt(parts[0]);
+    let month = parseInt(parts[1]);
+    const historyEntries: DiaryEntry[] = [];
+
+    // Search backwards through months until we have enough entries
+    while (historyEntries.length < maxEntries && (year > today.year - 2)) {
+      const monthEntries = await storage.listMonthEntries(year, month);
+      for (const e of monthEntries) {
+        if (e.date < beforeDate && e.content.trim().length > 0) {
+          historyEntries.push(e);
+        }
+      }
+      // Go to previous month
+      month--;
+      if (month < 1) { month = 12; year--; }
+    }
+
+    // Sort by date ascending and take the most recent N
+    historyEntries.sort((a, b) => a.date.localeCompare(b.date));
+    const recent = historyEntries.slice(-maxEntries);
+
+    if (recent.length === 0) return '';
+
+    return recent.map(e => `【${e.date}】\n${e.content}`).join('\n\n');
+  }, [today.year]);
+
   // Request AI reviews from multiple personalities
   const requestReviews = useCallback(async (
     entry: DiaryEntry,
@@ -128,13 +157,16 @@ export function useJournal() {
   ): Promise<DiaryEntry | null> => {
     if (!config.deepseekApiKey || selectedPersonalities.length === 0) return null;
 
+    // Fetch diary history for context
+    const history = await fetchDiaryHistory(entry.date);
+
     const reviews: AIReview[] = [];
 
     for (const p of selectedPersonalities) {
       const combinedPrompt = config.sharedPrompt
         ? `${p.prompt}\n\n${config.sharedPrompt}`
         : p.prompt;
-      const result = await requestAIReview(config.deepseekApiKey, combinedPrompt, entry.content);
+      const result = await requestAIReview(config.deepseekApiKey, combinedPrompt, entry.content, history || undefined);
       if (result.success && result.reply) {
         reviews.push({
           personalityId: p.id,
@@ -157,7 +189,7 @@ export function useJournal() {
       return updated;
     }
     return null;
-  }, [config.deepseekApiKey, saveEntry]);
+  }, [config.deepseekApiKey, saveEntry, fetchDiaryHistory]);
 
   const navigateMonth = useCallback((delta: number) => {
     setCurrentMonth(prev => {

@@ -19,6 +19,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('config:write', config),
 
   // Deepseek AI
-  requestAIReview: (apiKey, prompt, content) =>
-    ipcRenderer.invoke('deepseek:chat', { apiKey, prompt, content }),
+  requestAIReview: (apiKey, prompt, content, history) =>
+    ipcRenderer.invoke('deepseek:chat', { apiKey, prompt, content, history }),
 });

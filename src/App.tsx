@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, BookHeart, Sun, Moon, Info } from 'lucide-react';
+import { Settings, Sun, Moon, Info } from 'lucide-react';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { useJournal } from './hooks/useJournal';
 import Calendar from './components/Calendar';
@@ -66,9 +66,7 @@ function AppInner() {
       {/* Top bar */}
       <header className="relative z-10 flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-accent-lavender/20 to-accent-rose/20">
-            <BookHeart size={22} style={{ color: 'var(--accent-lavender)' }} />
-          </div>
+          <img src="/tubiao.png" alt="墨笺" className="w-9 h-9 rounded-xl object-cover" />
           <div>
             <h1 className="text-xl font-serif font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>墨笺</h1>
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>每日一页，记录时光</p>

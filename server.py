@@ -199,10 +199,11 @@ class APIHandler(SimpleHTTPRequestHandler):
             json_response(self, {'error': 'Not found'}, 404)
 
     def handle_deepseek(self, body):
-        """Proxy request to Deepseek API with personality prompt."""
+        """Proxy request to Deepseek API with personality prompt and optional diary history."""
         api_key = body.get('apiKey', '')
         content = body.get('content', '')
         personality_prompt = body.get('personalityPrompt', '')
+        history = body.get('history', '')
 
         if not api_key:
             json_response(self, {'success': False, 'error': 'API Key 未配置'})
@@ -210,14 +211,16 @@ class APIHandler(SimpleHTTPRequestHandler):
 
         system_prompt = personality_prompt or '你是一位温暖、富有洞察力的朋友，善于倾听和回应。请用中文回复。'
 
+        if history:
+            user_message = f'以下是这位用户过去的日记记录，请了解他的经历和心情变化：\n\n{history}\n\n---\n\n以上是历史日记。现在，请根据你的人设，以你的风格回复他今天写的这篇日记：\n\n{content}'
+        else:
+            user_message = f'请根据你的人设，以你的风格回复这篇日记：\n\n{content}'
+
         payload = json.dumps({
             'model': 'deepseek-chat',
             'messages': [
                 {'role': 'system', 'content': system_prompt},
-                {
-                    'role': 'user',
-                    'content': f'请根据你的人设，以你的风格回复这篇日记：\n\n{content}'
-                }
+                {'role': 'user', 'content': user_message}
             ],
             'temperature': 0.8,
             'max_tokens': 800,
