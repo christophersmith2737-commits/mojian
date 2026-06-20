@@ -5,7 +5,6 @@
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![react](https://img.shields.io/badge/react-19-blue)
 ![electron](https://img.shields.io/badge/electron-42-blue)
-![capacitor](https://img.shields.io/badge/capacitor-android-blue)
 
 ## ✨ 功能
 
@@ -49,25 +48,12 @@ npm run dev
 2. 把整个文件夹打包发给对方
 3. 对方双击 `启动墨笺-免构建.bat` 即可使用（只需 Python 3）
 
-## 📱 Android 版本
-
-```bash
-# 构建前端
-npm run build
-
-# 同步到 Android 项目
-npx cap sync android
-
-# 用 Android Studio 打开 android/ 目录，Build → Build APK
-```
-
 ## 🛠 技术栈
 
 | 层 | 技术 |
 |---|---|
 | 前端 | React 19 + TypeScript + Tailwind CSS + Framer Motion |
 | 桌面端 | Electron 42 |
-| 移动端 | Capacitor (Android) |
 | 后端 | Python 3 标准库（无第三方依赖） |
 | AI | DeepSeek API |
 | 图标 | Lucide React |
@@ -85,8 +71,7 @@ diary-app/
 ├── electron/                # Electron 主进程 & preload
 ├── presets/                 # 预设人格 txt 文件
 ├── server.py                # Python 后端（API + 静态文件服务）
-├── 启动墨笺-免构建.bat       # 一键启动脚本（仅需 Python）
-└── capacitor.config.ts      # Capacitor 移动端配置
+└── 启动墨笺-免构建.bat       # 一键启动脚本（仅需 Python）
 ```
 
 ## ⚠️ 注意事项
