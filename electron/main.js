@@ -58,11 +58,13 @@ function loadPresetPersonalities() {
     const name = path.basename(f, '.txt');
     const prompt = fs.readFileSync(path.join(presetsDir, f), 'utf-8').trim();
     if (prompt) {
+      // 包含"默认"的预设默认启用，其余默认禁用
+      const enabled = name.includes('默认');
       personalities.push({
         id: 'preset_' + name,
         name: name,
         prompt: prompt,
-        enabled: false,
+        enabled: enabled,
       });
     }
   }

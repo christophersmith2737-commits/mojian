@@ -34,11 +34,13 @@ def load_preset_personalities():
         prompt = f.read_text('utf-8').strip()
         if prompt:
             pid = 'preset_' + name  # stable id based on name
+            # 包含"默认"的预设默认启用，其余默认禁用
+            enabled = '默认' in name
             personalities.append({
                 'id': pid,
                 'name': name,
                 'prompt': prompt,
-                'enabled': False,  # disabled by default, user can enable
+                'enabled': enabled,
             })
     return personalities
 
