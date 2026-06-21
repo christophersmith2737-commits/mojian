@@ -166,7 +166,10 @@ export function useJournal() {
       const combinedPrompt = config.sharedPrompt
         ? `${p.prompt}\n\n${config.sharedPrompt}`
         : p.prompt;
-      const result = await requestAIReview(config.deepseekApiKey, combinedPrompt, entry.content, history || undefined);
+      // Find prior reply from same personality for continuity
+      const existing = (entry.aiReviews || []).filter(r => r.personalityId === p.id);
+      const priorReply = existing.length > 0 ? existing[existing.length - 1].content : undefined;
+      const result = await requestAIReview(config.deepseekApiKey, combinedPrompt, entry.content, history || undefined, priorReply);
       if (result.success && result.reply) {
         reviews.push({
           personalityId: p.id,

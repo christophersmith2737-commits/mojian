@@ -206,14 +206,18 @@ class APIHandler(SimpleHTTPRequestHandler):
         content = body.get('content', '')
         personality_prompt = body.get('personalityPrompt', '')
         history = body.get('history', '')
+        prior_reply = body.get('priorReply', '')  # previous reply from same personality
 
         if not api_key:
             json_response(self, {'success': False, 'error': 'API Key 未配置'})
             return
 
-        system_prompt = personality_prompt or '你是一位温暖、富有洞察力的朋友，善于倾听和回应。请用中文回复。'
+        system_prompt = (personality_prompt or '你是一位温暖、富有洞察力的朋友，善于倾听和回应。请用中文回复。')
+        system_prompt += '\n\n【重要】请直接说话，不要用括号描述动作、神态或心理活动（如"（叹气）""（微笑）""（摇头）"等），用对话本身传递情绪。保持沉浸式交流体验。'
 
-        if history:
+        if prior_reply:
+            user_message = f'这是用户今天写的日记：\n\n{content}\n\n---\n\n你上一次的回复是：\n"{prior_reply}"\n\n请自然衔接你上次的回复，不要简单复述或完全重复相同的话。用你的方式继续回应这篇日记，表达新的感受或补充你之前没提到的角度。'
+        elif history:
             user_message = f'以下是这位用户过去的日记记录，请了解他的经历和心情变化：\n\n{history}\n\n---\n\n以上是历史日记。现在，请根据你的人设，以你的风格回复他今天写的这篇日记：\n\n{content}'
         else:
             user_message = f'请根据你的人设，以你的风格回复这篇日记：\n\n{content}'

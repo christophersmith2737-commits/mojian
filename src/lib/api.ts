@@ -57,11 +57,12 @@ export async function requestAIReview(
   apiKey: string,
   personalityPrompt: string,
   content: string,
-  history?: string
+  history?: string,
+  priorReply?: string
 ): Promise<{ success: boolean; reply?: string; error?: string }> {
-  if (isElectron) return (window as any).electronAPI.requestAIReview(apiKey, personalityPrompt, content, history);
+  if (isElectron) return (window as any).electronAPI.requestAIReview(apiKey, personalityPrompt, content, history, priorReply);
   return fetchJSON(`${BASE}/deepseek/chat`, {
     method: 'POST',
-    body: JSON.stringify({ apiKey, personalityPrompt, content, history }),
+    body: JSON.stringify({ apiKey, personalityPrompt, content, history, priorReply }),
   });
 }
