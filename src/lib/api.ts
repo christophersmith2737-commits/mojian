@@ -53,6 +53,15 @@ export async function writeConfig(config: {
 
 // ---- Deepseek AI ----
 
+/** Strip parenthetical action descriptions like （叹气）（微笑）from AI replies */
+function stripActionBrackets(text: string): string {
+  return text
+    .replace(/（[^）]*）/g, '')   // Chinese fullwidth brackets
+    .replace(/\([^)]*\)/g, '')    // ASCII brackets (fallback)
+    .replace(/\s{2,}/g, ' ')      // collapse double spaces
+    .trim();
+}
+
 export async function requestAIReview(
   apiKey: string,
   personalityPrompt: string,
@@ -61,8 +70,12 @@ export async function requestAIReview(
   priorReply?: string
 ): Promise<{ success: boolean; reply?: string; error?: string }> {
   if (isElectron) return (window as any).electronAPI.requestAIReview(apiKey, personalityPrompt, content, history, priorReply);
-  return fetchJSON(`${BASE}/deepseek/chat`, {
+  const result = await fetchJSON(`${BASE}/deepseek/chat`, {
     method: 'POST',
     body: JSON.stringify({ apiKey, personalityPrompt, content, history, priorReply }),
   });
+  if (result.success && result.reply) {
+    result.reply = stripActionBrackets(result.reply);
+  }
+  return result;
 }
